@@ -33,7 +33,7 @@ namespace CSO
             lower_limit[3] = -5;
             lower_limit[4] = -5;
 
-            CSO test = new CSO(100,5,200, Rosenbrock_function, upper_limit, lower_limit);
+            CSO test = new CSO(100,5,200, Rosenbrock_function, upper_limit, lower_limit, 0.3, 0.1, 5, true);
             test.Solve();
         }
     }

@@ -201,7 +201,7 @@ namespace CSO
                 number_of_copies = SMP;
             }
 
-            double[][] copies = new double[number_of_copies][];
+            double[][] copies = new double[SMP][];
 
             for (int i = 0; i < number_of_copies; i++)
             {
@@ -213,7 +213,17 @@ namespace CSO
                 }
             }
 
-            //creating smp (or smp-1 if cpc is set to true) copies of cat that are going to be transformed
+            if (SPC)
+            {
+                copies[SMP - 1] = new double[n_dimensions];
+
+                for (int j = 0; j < n_dimensions; j++)
+                {
+                    copies[SMP - 1][j] = arguments[number][j];
+                }
+            }
+
+            //creating smp (or smp-1 if spc is set to true) copies of cat that are going to be transformed
 
             double dimensions_to_change_double = n_dimensions * CDC + 0.1;
             int dimensions_to_change = (int)dimensions_to_change_double;
@@ -275,9 +285,9 @@ namespace CSO
 
             //after each copy of currently transformed cat is altered it is time to calculate their fitness values and choose one of them
 
-            double[] copies_fit = new double[number_of_copies];
+            double[] copies_fit = new double[SMP];
 
-            for (int i = 0; i < number_of_copies; i++)
+            for (int i = 0; i < SMP; i++)
             {
                 copies_fit[i] = function(copies[i]);
             }
@@ -285,7 +295,7 @@ namespace CSO
             int current_best = 0;
             int current_worst = 0;
 
-            for (int i = 0; i < number_of_copies; i++)
+            for (int i = 0; i < SMP; i++)
             {
                 if (copies_fit[current_best] > copies_fit[i])
                 {
@@ -301,13 +311,13 @@ namespace CSO
            // Console.WriteLine("Najlepszy " + current_best);
            // Console.WriteLine("Najgorszy " + current_worst);
 
-            int[] probabilities = new int[number_of_copies];
+            int[] probabilities = new int[SMP];
             int probabilities_sum = 0;
 
             //calculated probabilities doesnt add up to any nice integer number (bc why would they right..) and are in range [0;1]
             //the way i decided to choose 'randomly' is pretty cursed but for now i dont have any better idea
 
-            for (int i = 0; i < number_of_copies; i++)
+            for (int i = 0; i < SMP; i++)
             {
                 double probability_as_double = 10000000;
                 if (current_best != current_worst)
@@ -322,10 +332,10 @@ namespace CSO
             }
 
 
-            int[] probabilities_choosing = new int[number_of_copies];
+            int[] probabilities_choosing = new int[SMP];
             probabilities_choosing[0] = 0;
 
-            for (int i = 1; i < number_of_copies; i++)
+            for (int i = 1; i < SMP; i++)
             {
                 //in this array every next element is the previous one incremented by one probability value
                 probabilities_choosing[i] = probabilities_choosing[i - 1] + probabilities[i - 1];
@@ -337,9 +347,9 @@ namespace CSO
             int choosing_number = random2.Next(probabilities_sum + 1);
             int chosen_one = 0;
 
-            for(int i=0; i < number_of_copies; i++)
+            for(int i=0; i < SMP; i++)
             {
-                if (i == number_of_copies-1)
+                if (i == SMP-1)
                 {
                     chosen_one = i;
                 }
